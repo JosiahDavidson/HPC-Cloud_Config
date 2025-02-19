@@ -1,0 +1,20 @@
+
+Host bell
+    User <your_username>
+    HostName bell.rcac.purdue.edu
+    IdentityFile ~/.ssh/<your_key>
+ 
+Host hlrn-*
+    User <your_username>
+    IdentityFile ~/.ssh/<your_key>
+    Port 22
+    ProxyCommand ssh $(echo %h | cut -d- -f1) nc $(echo %h | cut -d- -f2) %p
+
+
+Host hlrn-*-singularity
+    User <your_username>
+    IdentityFile ~/.ssh/<your_key>
+    RequestTTY force
+    Port 22
+    ProxyCommand ssh $(echo %h | cut -d- -f1) nc $(echo %h | cut -d- -f2) %p
+    RemoteCommand singularity shell --env HTTP_PROXY="<IDK YET...we will figure it out>",HTTPS_PROXY="<IDK YET...we will figure it out>" instance://<container_name>
