@@ -1,7 +1,7 @@
 # Configuration of VS Code remote SSH extension
 
 In order to properly connect with the SSH server, the following configuration is required:
-```
+```json
 "remote.SSH.enableRemoteCommand": true,
 "remote.SSH.useLocalServer": true,
 "remote.SSH.configFile": "<SSH CONFIG PATH>",
@@ -10,7 +10,7 @@ In order to properly connect with the SSH server, the following configuration is
 If you are running with `apptainer` then nothing additional is required; however, if you are using `singularity` then additional configuration for the server install path will be required. A simple search should return results.
 
 Finally, for some reason, with at least the bell cluster, "reviving" terminal sessions sort of breaks everything randomly requiring a vscode-server restart (not fun). So for the time being, ensure the following is in the settings to prevent reviving terminals:
-```
+```json
 "terminal.integrated.persistentSessionReviveProcess": "never",
 ```
 
