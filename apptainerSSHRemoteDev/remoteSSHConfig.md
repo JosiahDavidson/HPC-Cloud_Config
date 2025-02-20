@@ -1,6 +1,6 @@
-# Configuration of VS Code remote SSH extension
+# Configuration of VS Code remote SSH extension for running inside container
 
-In order to properly connect with the SSH server, the following configuration is required:
+In order to properly connect with the container using SSH remote dev plugin, the following configuration is required:
 ```json
 "remote.SSH.enableRemoteCommand": true,
 "remote.SSH.useLocalServer": true,
