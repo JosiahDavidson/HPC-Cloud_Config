@@ -14,5 +14,27 @@ Finally, for some reason, with at least the bell cluster, "reviving" terminal se
 "terminal.integrated.persistentSessionReviveProcess": "never",
 ```
 
-# Configuration of SSH File
-The file `apptainerSSHConfig` contained in this file outlines the configuration and should be placed inside the same file for used for teh `remote.SSH.configFile` used above. It is necessary to include the `-s /bin/bash` in order to include a reload of the `~/.bashrc` file containing all requisite paths for usage with mamba. However, after several long hours, the `PS1` variable is still being written in a weird fashion, so the only way to get the fun prompt back is to resource it again after the terminal has started. Even exporting the `APPTAINERENV_PS1` variable doesn't keep dynamic functionality of the `PS1` variable, rather it is static until resourcing is done. :(
+# Configuration of SSHconfig File
+The file `apptainerSSHConfig` contained in this folder outlines the configuration and its contents should be placed inside the same file for used for the `remote.SSH.configFile` used above. It is necessary to include the `-s /bin/bash` in order to include a reload of the `~/.bashrc` file containing all requisite paths for usage with mamba. However, after several long hours, the `PS1` variable is still being written in a weird fashion, so the only way to get the fun prompt back is to resource it again after the terminal has started. Even exporting the `APPTAINERENV_PS1` variable doesn't keep dynamic functionality of the `PS1` variable, rather it is static until resourcing is done. :(
+
+Specifically for identity keys, at least on Purdue's bell cluster, it seems that keys are bound automatically. Nevertheless, that means the host `ssh_config` file should include proper configuration for `github.com` host as included in the `apptainerSSHConfig` file. Alternatively, and for other non-github connections, if you need a key to be indiscriminately added to the `ssh-agent` the `Host *` will essentially add all identity keys for any connection. This is not the best practice, but should work in a pinch. 
+
+Execution of `ssh -T git@github.com` from inside the apptainer should result in affirmative authentication if setup is finished properly.
+
+# Configuration of `.bashrc`
+Note to self: it may be best in the future, to make the bashrc more apptainer to reduce latency. If it is connecting to an apptainer via SSH then we don't need any prompt configuration as we will need to resource to set `PS1`. Realistically, we only need the mamba/conda environments set, and then we can handle the "pretty print" of the prompt when we re-source once inside the shell.if needed (as is the case for an interactive terminal).
+
+This is possible by using the following:
+```bash
+    if [ -n "$APPTAINER_CONTAINER" ]; then
+        # EXECUTE CONTAINER SPECIFIC CODE HERE. ":" provided below in case it's empty to avoid syntax errors
+        :
+    else
+        # Execute general code here, but be careful as this will not run from the ssh config provided here
+        eval `ssh-agent -s`
+    fi
+```
+
+# Manually binding ssh agents to Apptainer
+
+In the event that the host apptainer configuration does not automatically bind ssh keys, it may be necessary to manually bind the agent. In that case, the following command `-B $SSH_AUTH_SOCK` should be passed in when starting the apptainer or added to the SSH `RemoteCommand` line. This binds the host authentication socket to the Apptainer and pipes it appropriately. Now, in order for `$SSH_AUTH_SOCK` to hold a value `sshd` must be "running" in the session. In such cases, it is easiest to include the `eval...` line from above in the source `rc` file on startup of the desired shell. 
