@@ -14,6 +14,19 @@ Finally, for some reason, with at least the bell cluster, "reviving" terminal se
 "terminal.integrated.persistentSessionReviveProcess": "never",
 ```
 
+## Mac OSx configuration
+If you will only ever connect via one host OS (i.e. only windows or only mac), the above is likely to be sufficient. I do not know how differing versions of host OS though impacts connecting using Remote SSH. 
+
+For times when multiple OSs will be needed however, it will be necesary to set some additional parameters as below:
+```json
+"remote.SSH.serverInstallPath": {
+        "<Host name from SSH config>": "<path to install remote server on the host system>"
+    },
+"remote.SSH.useLocalServer": false,
+```
+
+It is not quite exactly clear when `remote.SSH.useLocalServer` is required to be set, but if you add this, ensure that the same line doesn't appear above as well.
+
 # Configuration of SSHconfig File
 The file `apptainerSSHConfig` contained in this folder outlines the configuration and its contents should be placed inside the same file for used for the `remote.SSH.configFile` used above. It is necessary to include the `-s /bin/bash` in order to include a reload of the `~/.bashrc` file containing all requisite paths for usage with mamba. However, after several long hours, the `PS1` variable is still being written in a weird fashion, so the only way to get the fun prompt back is to resource it again after the terminal has started. Even exporting the `APPTAINERENV_PS1` variable doesn't keep dynamic functionality of the `PS1` variable, rather it is static until resourcing is done. :(
 
@@ -38,3 +51,4 @@ This is possible by using the following:
 # Manually binding ssh agents to Apptainer
 
 In the event that the host apptainer configuration does not automatically bind ssh keys, it may be necessary to manually bind the agent. In that case, the following command `-B $SSH_AUTH_SOCK` should be passed in when starting the apptainer or added to the SSH `RemoteCommand` line. This binds the host authentication socket to the Apptainer and pipes it appropriately. Now, in order for `$SSH_AUTH_SOCK` to hold a value `sshd` must be "running" in the session. In such cases, it is easiest to include the `eval...` line from above in the source `rc` file on startup of the desired shell. 
+
